@@ -1,2 +1,2 @@
 # palindromex
-Find out is some text palindrome
+Find out if some text is a palindrome
