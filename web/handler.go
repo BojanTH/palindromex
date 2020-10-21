@@ -1,18 +1,19 @@
 package web
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 )
 
-type Error interface {
-	error
-	StatusCode() int
-}
-
+// StatusError is a custom error type with a status code
 type StatusError struct {
 	Err error
 	Code int
+}
+
+// NewStatusError creates a new StatusError
+func NewStatusError(err error, code int) error {
+	return StatusError{err, code}
 }
 
 // Error is used so that StatuError satisfies the error interface
@@ -25,21 +26,26 @@ func (se StatusError) StatusCode() int {
 	return se.Code
 }
 
+// Handler is a wrapper around http.Handler, all requests will go trough this handler
 type Handler struct {
 	Container *Container
-	Handle func(response http.ResponseWriter, request *http.Request) error
+	Handle func(container *Container, response http.ResponseWriter, request *http.Request) error
 }
 
+// ServeHTTP is calling the handle method and allows us to handle all error responses in one place based on the error type
 func (h Handler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
-	err := h.Handle(response, request)
+	err := h.Handle(h.Container, response, request)
+
+	// The error handeling below is added for demonstration purposes
 	if err != nil {
 		switch e := err.(type) {
-		case Error:
-			// @TODO: add logging
+		case StatusError:
+			log.Printf("Error code: %d Error message: %s", e.StatusCode(), e.Error())
+
 			http.Error(response, e.Error(), e.StatusCode())
 		default:
-			fmt.Println(e)
-			// @TODO: template errors end up here, they should be better handled
+			log.Printf("Error: %s", e.Error())
+
 			http.Error(response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 	}
