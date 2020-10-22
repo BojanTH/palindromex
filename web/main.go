@@ -9,6 +9,7 @@ import (
 
 var (
 	AppPort       string
+	JwtKey        string
 	SessionSecret string
 	DbHost        string
 	DbName        string
@@ -21,6 +22,7 @@ var (
 func Make() {
 	c := NewContainer()
 
+	// Public paths
 	c.Router.Handle("/signup", Handler{c, signupHandler}).
 		Methods("GET", "POST").
 		Name("signup")
@@ -29,7 +31,15 @@ func Make() {
 		Methods("GET", "POST").
 		Name("signin")
 
-	// for files in dist dir
+	// Secured paths
+	auth := c.Router.PathPrefix("/user").Subrouter()
+	auth.Use(VerifyJwtCookie)
+
+	auth.Handle("/{userID}/messages", Handler{c, messagesHandler}).
+		Methods("GET", "POST").
+		Name("messages")
+
+	// Static file paths
 	c.Router.HandleFunc("/static/{file:[^/]+.(?:js|css)[?0-9]*$}", func(response http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
 		http.ServeFile(response, request, "web/static/dist/"+vars["file"])

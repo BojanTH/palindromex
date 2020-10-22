@@ -3,6 +3,7 @@ package web
 import (
 	"palindromex/web/dto"
 
+	"strconv"
 	"errors"
 	"net/http"
 )
@@ -61,6 +62,23 @@ func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 
 		return nil
 	}
+
+	r.ParseForm()
+	credentials := dto.Credentials{Email: r.FormValue("email"), Password: r.FormValue("password")}
+
+	user, err := c.UserService.GetUserByEmailAndPassword(credentials.Email, credentials.Password)
+	if err != nil {
+		return StatusError{err, http.StatusUnauthorized}
+	}
+
+	credentials.UserID = user.ID
+	err = SetJwtCookie(c, w, credentials)
+	if err != nil {
+		return StatusError{err, http.StatusInternalServerError}
+	}
+
+	url, _ := c.Router.Get("messages").URL("userID", strconv.Itoa(int(user.ID)))
+	http.Redirect(w, r, url.String(), http.StatusFound)
 
 	return nil
 }
