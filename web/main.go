@@ -10,6 +10,12 @@ import (
 var (
 	AppPort       string
 	SessionSecret string
+	DbHost        string
+	DbName        string
+	DbUser        string
+	DbPassword    string
+	DbPort        string
+	DbSslMode     string
 )
 
 func Make() {

@@ -12,6 +12,7 @@ module.exports = {
     // JS
     common: './static/js/common.js',
     signup: './static/js/signup.js',
+    signin: './static/js/signin.js',
     // CSS
     style_default: './static/css/default.css',
   },

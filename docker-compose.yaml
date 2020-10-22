@@ -5,7 +5,7 @@ services:
         volumes:
             - ./docker/nginx/conf/default.conf:/etc/nginx/nginx.conf
         ports:
-            - 80:80
+            - 8080:80
         depends_on:
             - goservice
             - db
@@ -28,7 +28,7 @@ services:
         ports:
             - 5432:5432
         volumes:
-            - ./docker/postgres/sql/:/docker-entrypoint-initdb.d/
+            - ./web/migrations/:/docker-entrypoint-initdb.d/
             - db-volume:/var/lib/postgresql/data/
 volumes:
     db-volume:

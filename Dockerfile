@@ -3,6 +3,7 @@ FROM golang:1.14
 WORKDIR /go/src/palindromex
 COPY . .
 RUN apt-get -y update && \
+    apt-get install -y apt-utils && \
     apt-get install -y apt-transport-https curl software-properties-common && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && \

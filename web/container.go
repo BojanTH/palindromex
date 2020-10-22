@@ -1,7 +1,9 @@
 package web
 
 import (
+	"palindromex/web/db"
 	"palindromex/web/service"
+	"palindromex/web/repository"
 
 	"net/http"
 
@@ -10,12 +12,17 @@ import (
 )
 
 type Container struct {
-	Router    *mux.Router
-	Templates map[string]*service.Template
-	Flash     *service.Flash
+	Connection  *db.Connection
+	Router      *mux.Router
+	Templates   map[string]*service.Template
+	Flash       *service.Flash
+	UserService *service.User
 }
 
 func NewContainer() *Container {
+	// DB
+	connection := db.NewConnection(DbHost, DbUser, DbPassword, DbName, DbPort, DbSslMode)
+
 	// Router
 	router := mux.NewRouter()
 
@@ -30,10 +37,15 @@ func NewContainer() *Container {
 		panic(err)
 	}
 
+	// Services
+	userRepository := repository.NewUser(connection)
+	userService := service.NewUser(connection, userRepository)
+
 	return &Container {
+		Connection: connection,
 		Router: router,
 		Templates: templates,
 		Flash:  flash,
-
+		UserService: userService,
 	}
 }
