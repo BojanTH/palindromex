@@ -9,10 +9,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            // "program": "${fileDirname}",
             "program": "${workspaceFolder}",
             "args": [
-                //"--app-port", ":8080",
+                "--app_port", ":8080",
                 "serve"
            ]
         },
