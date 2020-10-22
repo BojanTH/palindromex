@@ -31,6 +31,10 @@ func signinHandler(container *Container, response http.ResponseWriter, request *
 
 func notFoundHandler(container *Container, response http.ResponseWriter, request *http.Request) error {
 	response.WriteHeader(http.StatusNotFound)
+	err := container.Templates["404.html"].Execute(response, request, nil)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

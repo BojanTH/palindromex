@@ -1,0 +1,36 @@
+version: "3"
+services:
+    web:
+        image: nginx
+        volumes:
+            - ./docker/nginx/conf/default.conf:/etc/nginx/nginx.conf
+        ports:
+            - 80:80
+        depends_on:
+            - goservice
+            - db
+    goservice:
+        build: .
+        volumes:
+            - .:/go/src/app
+        ports:
+            - "8080"
+        environment:
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+    db:
+        build: ./docker/postgres
+        environment:
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        ports:
+            - 5432:5432
+        volumes:
+            - ./docker/postgres/sql/:/docker-entrypoint-initdb.d/
+            - db-volume:/var/lib/postgresql/data/
+volumes:
+    db-volume:
+    # this volume is persisted in /var/lib/docker/volumes
+    # to remove use 'docker volume rm volume-name'
