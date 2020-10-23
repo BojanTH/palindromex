@@ -11,7 +11,13 @@ import (
 func signupHandler(c *Container, w http.ResponseWriter, r *http.Request) (err error) {
 	if r.Method == "GET" {
 		submitURL, err := c.Router.Get("signup").URL()
+		if err != nil {
+			return StatusError{err, http.StatusInternalServerError}
+		}
 		redirectURL, err := c.Router.Get("signin").URL()
+		if err != nil {
+			return StatusError{err, http.StatusInternalServerError}
+		}
 		pageData := dto.PageData{"submitURL": submitURL.Path, "redirectURL": redirectURL.Path}
 
 		err = c.Templates["signup.html"].Execute(w, r, pageData)
@@ -39,10 +45,6 @@ func signupHandler(c *Container, w http.ResponseWriter, r *http.Request) (err er
 	}()
 
 	c.UserService.CreateNewUser(&credentials)
-	if err != nil {
-		return StatusError{err, http.StatusBadRequest}
-	}
-
 	c.Flash.AddSuccess(w, r, "Success! Your account has been created.")
 	url, _ := c.Router.Get("signin").URL()
 	http.Redirect(w, r, url.String(), http.StatusFound)
@@ -80,6 +82,10 @@ func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	url, _ := c.Router.Get("messages").URL("userID", strconv.Itoa(int(user.ID)))
 	http.Redirect(w, r, url.String(), http.StatusFound)
 
+	return nil
+}
+
+func apiTokenHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 

@@ -31,13 +31,19 @@ func Make() {
 		Methods("GET", "POST").
 		Name("signin")
 
-	// Secured paths
-	auth := c.Router.PathPrefix("/user").Subrouter()
-	auth.Use(VerifyJwtCookie)
 
-	auth.Handle("/{userID}/messages", Handler{c, messagesHandler}).
+	// Secured paths
+	auth := c.Router.PathPrefix("/v1").Subrouter()
+	auth.Use(VerifyJwtCookie(c))
+
+	auth.Handle("/api-token", Handler{c, apiTokenHandler}).
+		Methods("GET").
+		Name("api_token")
+
+	auth.Handle("/users/{userID}/messages", Handler{c, messagesHandler}).
 		Methods("GET", "POST").
 		Name("messages")
+
 
 	// Static file paths
 	c.Router.HandleFunc("/static/{file:[^/]+.(?:js|css)[?0-9]*$}", func(response http.ResponseWriter, request *http.Request) {

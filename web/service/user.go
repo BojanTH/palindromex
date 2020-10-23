@@ -20,11 +20,13 @@ func NewUser(connection *db.Connection, UserRepository *repository.User) *User {
 	return &User{Connection: connection, UserRepository: UserRepository}
 }
 
+// @TODO move queries to the repository
 func (userService *User) CreateNewUser(credentials *dto.Credentials) {
 	user := model.User{}
 	user.Name = credentials.Name
 	user.Email = credentials.Email
 	user.Password = userService.getHashedPassword(credentials.Password)
+	// Set the user to enabled, in real life this should probably happen when the user confirms the signup email
 	user.Enabled = true
 
 	userService.Connection.Open()
@@ -66,4 +68,20 @@ func (userService *User) GetUserByEmailAndPassword(email string, password string
 	}
 
 	return u, errors.New("Invalid password")
+}
+
+func (userService *User) IsAPIKeyValidForUser(userID int, key string) bool {
+	userService.Connection.Open()
+	defer userService.Connection.Close()
+
+	k := model.ApiKey{}
+	userService.Connection.Conn.First(&k, "user_id = ? AND key = ?", userID, key)
+	if k.ID == 0 {
+		return false
+	}
+	if !k.Enabled {
+		return false
+	}
+
+	return true
 }

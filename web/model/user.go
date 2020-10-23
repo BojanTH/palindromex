@@ -14,6 +14,7 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Messages  []Message
+	ApiKeys   []ApiKey
 }
 
 // TableName sets the table name to "_user" because "user" is a reserved word in Postgres
