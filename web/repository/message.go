@@ -20,6 +20,17 @@ func (repo *Message) CreateNew(message model.Message) {
 	repo.Connection.Conn.Create(&message)
 }
 
+func (repo *Message) FindAllByUserID(userID int) ([]model.Message, error) {
+	repo.Connection.Open()
+	defer repo.Connection.Close()
+
+	var users []model.Message
+	result := repo.Connection.Conn.Find(&users, "user_id = ?", userID)
+
+	return users, result.Error
+}
+
+
 func (repo *Message) FindByUserIDAndID(userID, messageID int) model.Message {
 	repo.Connection.Open()
 	defer repo.Connection.Close()

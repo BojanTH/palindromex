@@ -47,6 +47,27 @@ func (service *Message) CreateNewMessage(user model.User, content string) error 
 	return nil
 }
 
+func (service *Message) FindAllByUserID(userID int) ([]dto.Message, error) {
+	var messages []dto.Message
+	allMessages, err := service.MessageRepository.FindAllByUserID(userID)
+	if err != nil {
+		return messages, err
+	}
+
+	for _, message := range allMessages {
+	    messageDTO := dto.Message {
+			ID: message.ID,
+			UserID: message.UserID,
+	        Content: message.Content,
+	        Palindrome: message.Palindrome,
+	        CreatedAt: message.CreatedAt,
+	        UpdatedAt: message.UpdatedAt,
+	    }
+		messages = append(messages, messageDTO)
+	}
+
+	return messages, nil
+}
 
 func (service *Message) FindByUserIDAndID(userID, messageID int) dto.Message {
 	message := service.MessageRepository.FindByUserIDAndID(userID, messageID)

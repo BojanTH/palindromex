@@ -38,8 +38,18 @@ func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request)
 }
 
 
+// @TODO add pagination and limit
 func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
-	w.Write([]byte("messages"))
+	vars := mux.Vars(r)
+	userID, _ := strconv.Atoi(vars["userID"])
+
+	messages, err := c.MessageService.FindAllByUserID(userID)
+	if err != nil {
+		return err
+	}
+
+	value, _ := json.Marshal(messages)
+	w.Write(value)
 
 	return nil
 }
