@@ -44,6 +44,10 @@ func Make() {
 		Methods("GET").
 		Name("messages")
 
+	auth.Handle("/messages", Handler{c, createMessageHandler}).
+		Methods("POST").
+		Name("messages")
+
 
 	// Static file paths
 	c.Router.HandleFunc("/static/{file:[^/]+.(?:js|css)[?0-9]*$}", func(response http.ResponseWriter, request *http.Request) {

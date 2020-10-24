@@ -41,14 +41,17 @@ func SetJwtCookie(c *Container, w http.ResponseWriter, user model.User) error {
 	return nil
 }
 
-func GetAPICredentials(c *Container, w http.ResponseWriter, user model.User) (string, string) {
+func GetAPICredentials(c *Container, w http.ResponseWriter, user model.User) (string, string, error) {
 	expirationTime := time.Now().Add(permanentTokenPeriod)
 	apiKey := fmt.Sprintf("key-%d", expirationTime.Unix)
-	c.ApiKeyService.CreateNew(user, apiKey)
+	err := c.ApiKeyService.CreateNew(user, apiKey)
+	if err != nil {
+		return "", "", err
+	}
 
 	tokenString := CreateJwtToken(user.ID, expirationTime, apiKey)
 
-	return apiKey, tokenString
+	return apiKey, tokenString, nil
 }
 
 func CreateJwtToken(userID uint, expirationTime time.Time, apiKey string) string {

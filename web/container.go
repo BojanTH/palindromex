@@ -12,12 +12,13 @@ import (
 )
 
 type Container struct {
-	Connection    *db.Connection
-	Router        *mux.Router
-	Templates     map[string]*service.Template
-	Flash         *service.Flash
-	UserService   *service.User
-	ApiKeyService *service.APIKey
+	Connection     *db.Connection
+	Router         *mux.Router
+	Templates      map[string]*service.Template
+	Flash          *service.Flash
+	UserService    *service.User
+	ApiKeyService  *service.APIKey
+	MessageService *service.Message
 }
 
 func NewContainer() *Container {
@@ -43,6 +44,8 @@ func NewContainer() *Container {
 	userService := service.NewUser(connection, userRepository)
 	apiKeyRepository := repository.NewAPIKey(connection)
 	apiKeyService := service.NewAPIKey(apiKeyRepository)
+	messageRepository := repository.NewMessage(connection)
+	messageService := service.NewMessage(messageRepository)
 
 	return &Container {
 		Connection: connection,
@@ -51,5 +54,6 @@ func NewContainer() *Container {
 		Flash:  flash,
 		UserService: userService,
 		ApiKeyService: apiKeyService,
+		MessageService: messageService,
 	}
 }
