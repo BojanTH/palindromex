@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"palindromex/web/dto"
 	"palindromex/web/model"
 	"palindromex/web/repository"
 )
@@ -44,4 +45,21 @@ func (service *Message) CreateNewMessage(user model.User, content string) error 
 	service.MessageRepository.CreateNew(message)
 
 	return nil
+}
+
+
+func (service *Message) FindByUserIDAndID(userID, messageID int) dto.Message {
+	message := service.MessageRepository.FindByUserIDAndID(userID, messageID)
+
+	// Return DTO instad of the model to hide associated user data
+	messageDTO := dto.Message {
+		ID: message.ID,
+		UserID: message.UserID,
+	    Content: message.Content,
+	    Palindrome: message.Palindrome,
+	    CreatedAt: message.CreatedAt,
+	    UpdatedAt: message.UpdatedAt,
+	}
+
+	return messageDTO
 }

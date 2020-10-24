@@ -40,13 +40,17 @@ func Make() {
 		Methods("GET").
 		Name("api_credentials")
 
-	auth.Handle("/messages", Handler{c, messagesHandler}).
+	auth.Handle("/messages", Handler{c, getMessagesHandler}).
 		Methods("GET").
 		Name("messages")
 
+	auth.Handle("/messages/{id}", Handler{c, getOneMessageHandler}).
+		Methods("GET").
+		Name("messages_one")
+
 	auth.Handle("/messages", Handler{c, createMessageHandler}).
 		Methods("POST").
-		Name("messages")
+		Name("messages_create")
 
 
 	// Static file paths

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -9,13 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 )
-
-func messagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
-	w.Write([]byte("messages"))
-
-	return nil
-}
-
 
 func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
@@ -39,6 +33,31 @@ func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request)
 	)
 
 	w.Write([]byte(message))
+
+	return nil
+}
+
+
+func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+	w.Write([]byte("messages"))
+
+	return nil
+}
+
+
+func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID, _ := strconv.Atoi(vars["userID"])
+	messageID, _ := strconv.Atoi(vars["id"])
+
+	message := c.MessageService.FindByUserIDAndID(userID, messageID)
+	if message.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return nil
+	}
+
+	value, _ := json.Marshal(message)
+	w.Write(value)
 
 	return nil
 }
