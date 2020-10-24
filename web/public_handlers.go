@@ -3,9 +3,9 @@ package web
 import (
 	"palindromex/web/dto"
 
-	"strconv"
 	"errors"
 	"net/http"
+	"strconv"
 )
 
 func signupHandler(c *Container, w http.ResponseWriter, r *http.Request) (err error) {
@@ -66,15 +66,14 @@ func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	}
 
 	r.ParseForm()
-	credentials := dto.Credentials{Email: r.FormValue("email"), Password: r.FormValue("password")}
-
-	user, err := c.UserService.GetUserByEmailAndPassword(credentials.Email, credentials.Password)
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	user, err := c.UserService.GetUserByEmailAndPassword(email, password)
 	if err != nil {
 		return StatusError{err, http.StatusUnauthorized}
 	}
 
-	credentials.UserID = user.ID
-	err = SetJwtCookie(c, w, credentials)
+	err = SetJwtCookie(c, w, user)
 	if err != nil {
 		return StatusError{err, http.StatusInternalServerError}
 	}
@@ -82,10 +81,6 @@ func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	url, _ := c.Router.Get("messages").URL("userID", strconv.Itoa(int(user.ID)))
 	http.Redirect(w, r, url.String(), http.StatusFound)
 
-	return nil
-}
-
-func apiTokenHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 

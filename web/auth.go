@@ -2,29 +2,34 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
-	"palindromex/web/dto"
+	"palindromex/web/model"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
 type ContextKey string
+const userContext ContextKey = "user"
 
 const tokenName = "access-token"
-const tokenValidityPeriod = time.Duration(7 * 24) * time.Hour
+const cookieValidityPeriod = time.Duration(7 * 24) * time.Hour
+const maxDuration = 1<<63 - 1
+const permanentTokenPeriod = time.Duration(maxDuration)
 
 type Claims struct {
 	UserID uint	`json:user_id`
+	APIKey string `json:api_key`
 	jwt.StandardClaims
 }
 
-func SetJwtCookie(c *Container, w http.ResponseWriter, credentials dto.Credentials) error {
-	expirationTime := time.Now().Add(tokenValidityPeriod)
-	tokenString := CreateJwtToken(credentials, expirationTime)
+func SetJwtCookie(c *Container, w http.ResponseWriter, user model.User) error {
+	expirationTime := time.Now().Add(cookieValidityPeriod)
+	tokenString := CreateJwtToken(user.ID, expirationTime, "")
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    tokenName,
@@ -36,9 +41,20 @@ func SetJwtCookie(c *Container, w http.ResponseWriter, credentials dto.Credentia
 	return nil
 }
 
-func CreateJwtToken(credentials dto.Credentials, expirationTime time.Time) string {
+func GetAPICredentials(c *Container, w http.ResponseWriter, user model.User) (string, string) {
+	expirationTime := time.Now().Add(permanentTokenPeriod)
+	apiKey := fmt.Sprintf("key-%d", expirationTime.Unix)
+	c.ApiKeyService.CreateNew(user, apiKey)
+
+	tokenString := CreateJwtToken(user.ID, expirationTime, apiKey)
+
+	return apiKey, tokenString
+}
+
+func CreateJwtToken(userID uint, expirationTime time.Time, apiKey string) string {
 	claims := &Claims{
-		UserID: credentials.UserID,
+		UserID: userID,
+		APIKey: apiKey,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -56,10 +72,9 @@ func CreateJwtToken(credentials dto.Credentials, expirationTime time.Time) strin
 func VerifyJwtCookie(c *Container) mux.MiddlewareFunc {
 	return func (next http.Handler) http.Handler {
 	    return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-			apiKey := getAuthKey(request)
 			apiToken := getAuthToken(request)
 
-			isAPIRequest := len(apiKey) > 0 && len(apiToken) > 0
+			isAPIRequest := len(apiToken) > 0
 			if isAPIRequest {
 				handleAPIRequest(c, next, response, request)
 
@@ -69,15 +84,6 @@ func VerifyJwtCookie(c *Container) mux.MiddlewareFunc {
 			handleUIRequest(c, next, response, request)
 		})
 	}
-}
-
-func getAuthKey(request *http.Request) string {
-	var apiKey string
-	if key, ok := request.Header["X-Auth-Key"]; ok {
-		apiKey = key[0]
-	}
-
-	return apiKey
 }
 
 func getAuthToken(request *http.Request) string {
@@ -122,21 +128,21 @@ func handleAPIRequest(c *Container, next http.Handler, response http.ResponseWri
 	isNotAuthorized := uint(userID) != claims.UserID
 	if isNotAuthorized {
 		response.WriteHeader(http.StatusUnauthorized)
+		response.Write([]byte("Unauthorized"))
 
 		return
 	}
 
 	// Check is API key enabled
 	// @TODO move the API keys to redis
-	isAPIKeyValid := c.UserService.IsAPIKeyValidForUser(int(userID), getAuthKey(request))
+	isAPIKeyValid := c.UserService.IsAPIKeyValidForUser(int(userID), claims.APIKey)
 	if !isAPIKeyValid {
 		response.WriteHeader(http.StatusUnauthorized)
 
 		return
 	}
 
-	var userToken ContextKey = "user"
-	ctx := context.WithValue(request.Context(), userToken, token)
+	ctx := context.WithValue(request.Context(), userContext, token)
 	next.ServeHTTP(response, request.WithContext(ctx))
 }
 
@@ -189,13 +195,12 @@ func handleUIRequest(c *Container, next http.Handler, w http.ResponseWriter, r *
 	isNotAuthorized := uint(userID) != claims.UserID
 	if isNotAuthorized {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Not authorized!"))
+		w.Write([]byte("Unauthorized!"))
 
 		return
 	}
 
-	var userToken ContextKey = "user"
-	ctx := context.WithValue(r.Context(), userToken, token)
+	ctx := context.WithValue(r.Context(), userContext, token)
 	next.ServeHTTP(w, r.WithContext(ctx))
 }
 

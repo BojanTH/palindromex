@@ -33,15 +33,15 @@ func Make() {
 
 
 	// Secured paths
-	auth := c.Router.PathPrefix("/v1").Subrouter()
+	auth := c.Router.PathPrefix("/v1/users/{userID}").Subrouter()
 	auth.Use(VerifyJwtCookie(c))
 
-	auth.Handle("/api-token", Handler{c, apiTokenHandler}).
+	auth.Handle("/api-credentials", Handler{c, apiCredentialsHandler}).
 		Methods("GET").
-		Name("api_token")
+		Name("api_credentials")
 
-	auth.Handle("/users/{userID}/messages", Handler{c, messagesHandler}).
-		Methods("GET", "POST").
+	auth.Handle("/messages", Handler{c, messagesHandler}).
+		Methods("GET").
 		Name("messages")
 
 

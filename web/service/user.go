@@ -20,6 +20,10 @@ func NewUser(connection *db.Connection, UserRepository *repository.User) *User {
 	return &User{Connection: connection, UserRepository: UserRepository}
 }
 
+func (userService *User) GetUserByID(id int) model.User {
+	return userService.UserRepository.ByID(id)
+}
+
 // @TODO move queries to the repository
 func (userService *User) CreateNewUser(credentials *dto.Credentials) {
 	user := model.User{}
