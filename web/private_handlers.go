@@ -60,7 +60,10 @@ func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 	userID, _ := strconv.Atoi(vars["userID"])
 	messageID, _ := strconv.Atoi(vars["id"])
 
-	message := c.MessageService.FindByUserIDAndID(userID, messageID)
+	message, err := c.MessageService.FindMessage(userID, messageID)
+	if err != nil {
+		return err
+	}
 	if message.ID == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		return nil
@@ -90,4 +93,13 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 	}
 
 	return c.MessageService.CreateNewMessage(user, string(content))
+}
+
+
+func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID, _ := strconv.Atoi(vars["userID"])
+	messageID, _ := strconv.Atoi(vars["id"])
+
+	return c.MessageService.DeleteMessage(userID, messageID)
 }

@@ -20,6 +20,20 @@ func (repo *Message) CreateNew(message model.Message) {
 	repo.Connection.Conn.Create(&message)
 }
 
+func (repo *Message) DeleteMessage(userID, messageID int) error {
+	repo.Connection.Open()
+	defer repo.Connection.Close()
+
+	message := model.Message{
+		ID: uint(messageID),
+	}
+
+	// ID is already added to the where clause, add just additional values (userID)
+	result := repo.Connection.Conn.Where("user_id = ?", userID).Delete(&message)
+
+	return result.Error
+}
+
 func (repo *Message) FindAllByUserID(userID int) ([]model.Message, error) {
 	repo.Connection.Open()
 	defer repo.Connection.Close()
@@ -31,12 +45,12 @@ func (repo *Message) FindAllByUserID(userID int) ([]model.Message, error) {
 }
 
 
-func (repo *Message) FindByUserIDAndID(userID, messageID int) model.Message {
+func (repo *Message) FindMessage(userID, messageID int) (model.Message, error) {
 	repo.Connection.Open()
 	defer repo.Connection.Close()
 
 	message := model.Message{}
-	repo.Connection.Conn.First(&message, "id = ? AND user_id = ?", messageID, userID)
+	result := repo.Connection.Conn.First(&message, "id = ? AND user_id = ?", messageID, userID)
 
-	return message
+	return message, result.Error
 }

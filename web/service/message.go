@@ -47,6 +47,10 @@ func (service *Message) CreateNewMessage(user model.User, content string) error 
 	return nil
 }
 
+func (service *Message) DeleteMessage(userID, messageID int) error {
+	return service.MessageRepository.DeleteMessage(userID, messageID)
+}
+
 func (service *Message) FindAllByUserID(userID int) ([]dto.Message, error) {
 	var messages []dto.Message
 	allMessages, err := service.MessageRepository.FindAllByUserID(userID)
@@ -69,11 +73,15 @@ func (service *Message) FindAllByUserID(userID int) ([]dto.Message, error) {
 	return messages, nil
 }
 
-func (service *Message) FindByUserIDAndID(userID, messageID int) dto.Message {
-	message := service.MessageRepository.FindByUserIDAndID(userID, messageID)
+func (service *Message) FindMessage(userID, messageID int) (dto.Message, error) {
+	message, err := service.MessageRepository.FindMessage(userID, messageID)
+	var messageDTO dto.Message
+	if err != nil {
+		return messageDTO, err
+	}
 
 	// Return DTO instad of the model to hide associated user data
-	messageDTO := dto.Message {
+	messageDTO = dto.Message {
 		ID: message.ID,
 		UserID: message.UserID,
 	    Content: message.Content,
@@ -82,5 +90,5 @@ func (service *Message) FindByUserIDAndID(userID, messageID int) dto.Message {
 	    UpdatedAt: message.UpdatedAt,
 	}
 
-	return messageDTO
+	return messageDTO, nil
 }

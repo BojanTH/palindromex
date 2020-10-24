@@ -49,8 +49,10 @@ func Make() {
 		Name("messages_one")
 
 	auth.Handle("/messages", Handler{c, createMessageHandler}).
-		Methods("POST").
-		Name("messages_create")
+		Methods("POST")
+
+	auth.Handle("/messages/{id}", Handler{c, deleteMessageHandler}).
+		Methods("DELETE")
 
 
 	// Static file paths
