@@ -47,6 +47,18 @@ func (service *Message) CreateNewMessage(user model.User, content string) error 
 	return nil
 }
 
+func (service *Message) UpdateMessage(userID int, messageID int, content string) error {
+	message, err := service.MessageRepository.FindMessage(userID, messageID)
+	if err != nil {
+		return err
+	}
+
+	message.Content = content
+	message.Palindrome = IsPalindrome(content)
+
+	return service.MessageRepository.UpdateMessage(message)
+}
+
 func (service *Message) DeleteMessage(userID, messageID int) error {
 	return service.MessageRepository.DeleteMessage(userID, messageID)
 }

@@ -96,6 +96,22 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 }
 
 
+func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID, _ := strconv.Atoi(vars["userID"])
+	messageID, _ := strconv.Atoi(vars["id"])
+	content, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return StatusError{err, http.StatusBadRequest}
+	}
+	if len(content) == 0 {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
+
+	return c.MessageService.UpdateMessage(userID, messageID, string(content))
+}
+
+
 func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])

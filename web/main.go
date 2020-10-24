@@ -51,6 +51,9 @@ func Make() {
 	auth.Handle("/messages", Handler{c, createMessageHandler}).
 		Methods("POST")
 
+	auth.Handle("/messages/{id}", Handler{c, updateMessageHandler}).
+		Methods("PUT")
+
 	auth.Handle("/messages/{id}", Handler{c, deleteMessageHandler}).
 		Methods("DELETE")
 
