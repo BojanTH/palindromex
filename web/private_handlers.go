@@ -43,6 +43,7 @@ func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request)
 // @Summary Retrieves messages that belong to a specified user
 // @Produce json
 // @Param userID path integer true "userID"
+// @Security ApiToken
 // @Success 200 {object} []dto.Message
 // @Router /messages [get]
 func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
@@ -66,6 +67,7 @@ func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) er
 // @Produce json
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
+// @Security ApiToken
 // @Success 200 {object} dto.Message
 // @Router /messages/{mesageID} [get]
 func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
@@ -90,6 +92,7 @@ func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Param userID path integer true "userID"
 // @Param message body string true "Message (palindrome text)"
 // @Accept plain
+// @Security ApiToken
 // @Success 201
 // @Failure 400
 // @Router /messages [post]
@@ -125,6 +128,7 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Param messageID path integer true "messageID"
 // @Param message body string true "Message (palindrome text)"
 // @Accept plain
+// @Security ApiToken
 // @Success 200
 // @Failure 400
 // @Router /messages [put]
@@ -153,6 +157,7 @@ func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Summary Deletes existing message
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
+// @Security ApiToken
 // @Success 201
 // @Failure 404
 // @Router /messages [delete]

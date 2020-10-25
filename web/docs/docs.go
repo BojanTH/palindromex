@@ -30,6 +30,11 @@ var doc = `{
     "paths": {
         "/messages": {
             "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -56,6 +61,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "consumes": [
                     "text/plain"
                 ],
@@ -91,6 +101,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "consumes": [
                     "text/plain"
                 ],
@@ -119,6 +134,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "summary": "Deletes existing message",
                 "parameters": [
                     {
@@ -144,6 +164,11 @@ var doc = `{
         },
         "/messages/{mesageID}": {
             "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -203,7 +228,7 @@ var doc = `{
     "securityDefinitions": {
         "ApiToken": {
             "type": "apiKey",
-            "name": "X-Auth-Token",
+            "name": "Authorization",
             "in": "header"
         }
     }

@@ -18,6 +18,11 @@
     "paths": {
         "/messages": {
             "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -44,6 +49,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "consumes": [
                     "text/plain"
                 ],
@@ -79,6 +89,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "consumes": [
                     "text/plain"
                 ],
@@ -107,6 +122,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "summary": "Deletes existing message",
                 "parameters": [
                     {
@@ -132,6 +152,11 @@
         },
         "/messages/{mesageID}": {
             "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -191,7 +216,7 @@
     "securityDefinitions": {
         "ApiToken": {
             "type": "apiKey",
-            "name": "X-Auth-Token",
+            "name": "Authorization",
             "in": "header"
         }
     }

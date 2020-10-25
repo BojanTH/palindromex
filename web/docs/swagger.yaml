@@ -41,6 +41,8 @@ paths:
       responses:
         "201": {}
         "404": {}
+      security:
+      - ApiToken: []
       summary: Deletes existing message
     get:
       parameters:
@@ -58,6 +60,8 @@ paths:
             items:
               $ref: '#/definitions/dto.Message'
             type: array
+      security:
+      - ApiToken: []
       summary: Retrieves messages that belong to a specified user
     post:
       consumes:
@@ -77,6 +81,8 @@ paths:
       responses:
         "201": {}
         "400": {}
+      security:
+      - ApiToken: []
       summary: Creates a new message
     put:
       consumes:
@@ -101,6 +107,8 @@ paths:
       responses:
         "200": {}
         "400": {}
+      security:
+      - ApiToken: []
       summary: Updates existing message
   /messages/{mesageID}:
     get:
@@ -122,12 +130,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.Message'
+      security:
+      - ApiToken: []
       summary: Retrieves one message
 schemes:
 - https
 securityDefinitions:
   ApiToken:
     in: header
-    name: X-Auth-Token
+    name: Authorization
     type: apiKey
 swagger: "2.0"

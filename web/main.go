@@ -34,7 +34,7 @@ var (
 
 // @securityDefinitions.apikey ApiToken
 // @in header
-// @name X-Auth-Token
+// @name Authorization
 func Make() {
 	c := NewContainer()
 

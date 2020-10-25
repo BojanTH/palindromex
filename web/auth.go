@@ -91,7 +91,7 @@ func VerifyJwtCookie(c *Container) mux.MiddlewareFunc {
 
 func getAuthToken(request *http.Request) string {
 	var apiToken string
-	if key, ok := request.Header["X-Auth-Token"]; ok {
+	if key, ok := request.Header["Authorization"]; ok {
 		apiToken = key[0]
 	}
 
