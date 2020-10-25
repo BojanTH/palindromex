@@ -1,19 +1,20 @@
 package web
 
 import (
-	"net/http"
 	"log"
+	"net/http"
+	"os"
+
+	_ "palindromex/web/docs"
 
 	"github.com/gorilla/mux"
 	"github.com/swaggo/http-swagger"
-	_ "palindromex/web/docs"
 )
 
 var (
-	AppPort       string
 	JwtKey        string
 	SessionSecret string
-	DbHost        string
+	DbHost        string = os.Getenv("DB_HOST")
 	DbName        string
 	DbUser        string
 	DbPassword    string
@@ -86,6 +87,10 @@ func Make() {
 	// Redirect everything else to 404
 	c.Router.NotFoundHandler = Handler{c, notFoundHandler}
 
-	// Serve
-	log.Fatal(http.ListenAndServe(AppPort, c.Router))
+	port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+        log.Printf("defaulting to port %s", port)
+    }
+	log.Fatal(http.ListenAndServe(":" + port, c.Router))
 }
