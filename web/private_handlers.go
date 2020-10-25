@@ -113,7 +113,7 @@ func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
-	err := c.MessageService.UpdateMessage(userID, messageID, string(content))
+	err = c.MessageService.UpdateMessage(userID, messageID, string(content))
 	if err != nil {
 		return err
 	}
