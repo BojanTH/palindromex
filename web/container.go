@@ -11,6 +11,8 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// Container is a collection on singleton objects
+// All of the objects must be stateless because they are shared between requests
 type Container struct {
 	Connection     *db.Connection
 	Router         *mux.Router

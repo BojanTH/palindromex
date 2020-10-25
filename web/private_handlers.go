@@ -39,6 +39,12 @@ func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request)
 
 
 // @TODO add pagination and limit
+//
+// @Summary Retrieves messages that belong to a specified user
+// @Produce json
+// @Param userID path integer true "userID"
+// @Success 200 {object} []dto.Message
+// @Router /messages [get]
 func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
@@ -56,6 +62,12 @@ func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) er
 }
 
 
+// @Summary Retrieves one message
+// @Produce json
+// @Param userID path integer true "userID"
+// @Param messageID path integer true "messageID"
+// @Success 200 {object} dto.Message
+// @Router /messages/{mesageID} [get]
 func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
@@ -74,6 +86,13 @@ func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 }
 
 
+// @Summary Creates a new message
+// @Param userID path integer true "userID"
+// @Param message body string true "Message (palindrome text)"
+// @Accept plain
+// @Success 201
+// @Failure 400
+// @Router /messages [post]
 func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
@@ -101,6 +120,14 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 }
 
 
+// @Summary Updates existing message
+// @Param userID path integer true "userID"
+// @Param messageID path integer true "messageID"
+// @Param message body string true "Message (palindrome text)"
+// @Accept plain
+// @Success 200
+// @Failure 400
+// @Router /messages [put]
 func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
@@ -123,6 +150,12 @@ func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 }
 
 
+// @Summary Deletes existing message
+// @Param userID path integer true "userID"
+// @Param messageID path integer true "messageID"
+// @Success 201
+// @Failure 404
+// @Router /messages [delete]
 func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
@@ -130,7 +163,7 @@ func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 
 	err := c.MessageService.DeleteMessage(userID, messageID)
 	if err != nil {
-		return err
+		return StatusError{err, http.StatusNotFound}
 	}
 	w.WriteHeader(http.StatusNoContent)
 

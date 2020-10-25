@@ -1,0 +1,133 @@
+basePath: /v1/users/{userID}
+definitions:
+  dto.Message:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      palindrome:
+        type: boolean
+      updated_at:
+        type: string
+      userID:
+        type: integer
+    type: object
+host: palindromex.ml
+info:
+  contact: {}
+  description: Discover hidden world of palindromes
+  license:
+    name: BSD 2-Clause License
+    url: https://choosealicense.com/licenses/bsd-2-clause/
+  title: PalindromeX
+  version: "1.0"
+paths:
+  /messages:
+    delete:
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: messageID
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      responses:
+        "201": {}
+        "404": {}
+      summary: Deletes existing message
+    get:
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Message'
+            type: array
+      summary: Retrieves messages that belong to a specified user
+    post:
+      consumes:
+      - text/plain
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: Message (palindrome text)
+        in: body
+        name: message
+        required: true
+        schema:
+          type: string
+      responses:
+        "201": {}
+        "400": {}
+      summary: Creates a new message
+    put:
+      consumes:
+      - text/plain
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: messageID
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      - description: Message (palindrome text)
+        in: body
+        name: message
+        required: true
+        schema:
+          type: string
+      responses:
+        "200": {}
+        "400": {}
+      summary: Updates existing message
+  /messages/{mesageID}:
+    get:
+      parameters:
+      - description: userID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      - description: messageID
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Message'
+      summary: Retrieves one message
+schemes:
+- https
+securityDefinitions:
+  ApiToken:
+    in: header
+    name: X-Auth-Token
+    type: apiKey
+swagger: "2.0"

@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/gorilla/mux"
+	"github.com/swaggo/http-swagger"
+	_ "palindromex/web/docs"
 )
 
 var (
@@ -19,10 +21,28 @@ var (
 	DbSslMode     string
 )
 
+// @title PalindromeX
+// @version 1.0
+// @description Discover hidden world of palindromes
+
+// @license.name BSD 2-Clause License
+// @license.url https://choosealicense.com/licenses/bsd-2-clause/
+
+// @host palindromex.ml
+// @BasePath /v1/users/{userID}
+// @schemes https
+
+// @securityDefinitions.apikey ApiToken
+// @in header
+// @name X-Auth-Token
 func Make() {
 	c := NewContainer()
 
 	// Public paths
+	c.Router.Handle("/doc/{any}", httpSwagger.Handler(
+		httpSwagger.URL("/doc/doc.json"),
+	))
+
 	c.Router.Handle("/signup", Handler{c, signupHandler}).
 		Methods("GET", "POST").
 		Name("signup")
