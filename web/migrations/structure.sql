@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS api_key (
 CREATE TABLE IF NOT EXISTS message (
     id SERIAL PRIMARY KEY,
     user_id int NOT NULL,
-    content text NOT NULL,
+    content bytea NOT NULL,
     palindrome boolean,
     created_at timestamp with time zone,
     updated_at timestamp with time zone

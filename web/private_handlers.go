@@ -50,6 +50,7 @@ func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) er
 
 	value, _ := json.Marshal(messages)
 	w.Write(value)
+	w.WriteHeader(http.StatusOK)
 
 	return nil
 }
@@ -62,15 +63,12 @@ func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 
 	message, err := c.MessageService.FindMessage(userID, messageID)
 	if err != nil {
-		return err
-	}
-	if message.ID == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		return nil
+		return NewStatusError(err, http.StatusNotFound)
 	}
 
 	value, _ := json.Marshal(message)
 	w.Write(value)
+	w.WriteHeader(http.StatusOK)
 
 	return nil
 }
@@ -92,7 +90,14 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
-	return c.MessageService.CreateNewMessage(user, string(content))
+	err = c.MessageService.CreateNewMessage(user, string(content))
+	if err != nil {
+		return err
+	}
+
+	w.WriteHeader(http.StatusCreated)
+
+	return nil
 }
 
 
@@ -108,7 +113,13 @@ func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
-	return c.MessageService.UpdateMessage(userID, messageID, string(content))
+	err := c.MessageService.UpdateMessage(userID, messageID, string(content))
+	if err != nil {
+		return err
+	}
+	w.WriteHeader(http.StatusNoContent)
+
+	return nil
 }
 
 
@@ -117,5 +128,11 @@ func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 	userID, _ := strconv.Atoi(vars["userID"])
 	messageID, _ := strconv.Atoi(vars["id"])
 
-	return c.MessageService.DeleteMessage(userID, messageID)
+	err := c.MessageService.DeleteMessage(userID, messageID)
+	if err != nil {
+		return err
+	}
+	w.WriteHeader(http.StatusNoContent)
+
+	return nil
 }

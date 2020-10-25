@@ -45,8 +45,7 @@ func Make() {
 		Name("messages")
 
 	auth.Handle("/messages/{id}", Handler{c, getOneMessageHandler}).
-		Methods("GET").
-		Name("messages_one")
+		Methods("GET")
 
 	auth.Handle("/messages", Handler{c, createMessageHandler}).
 		Methods("POST")
