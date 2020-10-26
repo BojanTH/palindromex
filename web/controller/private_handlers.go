@@ -182,7 +182,8 @@ func UIShowMessagesHandler(c *container.Container, w http.ResponseWriter, r *htt
 	vars := mux.Vars(r)
 	userID := vars["userID"]
 	getMessagesURL, err := c.Router.Get("messages").URL("userID", userID)
-	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path}
+	createMessageURL, err := c.Router.Get("ui_create_message").URL("userID", userID)
+	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path, "createMessageURL": createMessageURL}
 
 	err = c.Templates["messages.html"].Execute(w, r, pageData)
 	if err != nil {

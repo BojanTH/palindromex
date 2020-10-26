@@ -30,14 +30,25 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function renderElement(destination, message) {
-    let element = "<div class='row'>";
+    let element =
+    `<div class="row mt-4">
+        <div class="col-1 center">`;
+
     if (message.palindrome) {
-        element += `<div class='col-1 center'><i class='palindrome-result fa fa-check-circle'></i></div>`
+        element += `<i class="palindrome-result mt-2 fa fa-check-circle"></i>`
     } else {
-        element += "<i class='palindrome-result fa fa-times-circle'></i>"
+        element += `<i class="palindrome-result mt-2 fa fa-times-circle"></i>`
     }
-    element += `<div class="col-11 menu-item p-2 mt-4">${message.Content}</div>`;
-    element += "</div>";
+
+    element +=
+        `</div>
+        <div class="col-11 menu-item p-2">${message.Content}</div>
+    </div>
+    <div class="row">
+        <div class="ml-auto">
+            <a class="btn btn-primary" href="/ui/users/${message.UserID}/edit-message/${message.id}">Edit</a>
+        </div>
+    </div>`;
 
     destination.innerHTML = destination.innerHTML + element;
 }
