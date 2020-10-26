@@ -15,19 +15,19 @@ import (
 type Connection struct {
 	Conn             *gorm.DB
 	IsOpen           bool
-	connectionString string
+	ConnectionString string
 }
 
 // NewConnection instance
 func NewConnection(host string, user string, password string, name string, port string, sslMode string) *Connection {
 	connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", host, user, password, name, port, sslMode)
 
-	return &Connection{connectionString: connectionString}
+	return &Connection{ConnectionString: connectionString}
 }
 
 // Open connection
 func (connection *Connection) Open() {
-	conn, err := gorm.Open("postgres", connection.connectionString)
+	conn, err := gorm.Open("postgres", connection.ConnectionString)
 	if err != nil {
 		panic("Failed to connect to database")
 	}

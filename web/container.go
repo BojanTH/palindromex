@@ -25,7 +25,8 @@ type Container struct {
 
 func NewContainer() *Container {
 	// DB
-	connection := db.NewConnection(DbHost, DbUser, DbPassword, DbName, DbPort, DbSslMode)
+	//connection := db.NewConnection(DbHost, DbUser, DbPassword, DbName, DbPort, DbSslMode)
+	connection := &db.Connection{ConnectionString: DbConnection}
 
 	// Router
 	router := mux.NewRouter()

@@ -20,6 +20,7 @@ var (
 	DbPassword    string = os.Getenv("DB_PASSWORD")
 	DbPort        string = os.Getenv("DP_PORT")
 	DbSslMode     string = os.Getenv("DB_SSL_MODE")
+	DbConnection  string = os.Getenv("DB_CONNECTION")
 )
 
 // @title PalindromeX
