@@ -1,6 +1,8 @@
-package web
+package controller
 
 import (
+	"palindromex/web/container"
+
 	"log"
 	"net/http"
 )
@@ -28,8 +30,8 @@ func (se StatusError) StatusCode() int {
 
 // Handler is a wrapper around http.Handler, all requests will go trough this handler
 type Handler struct {
-	Container *Container
-	Handle func(container *Container, response http.ResponseWriter, request *http.Request) error
+	Container *container.Container
+	Handle func(container *container.Container, response http.ResponseWriter, request *http.Request) error
 }
 
 // ServeHTTP is calling the handle method and allows us to handle all error responses in one place based on the error type

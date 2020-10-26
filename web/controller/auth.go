@@ -1,4 +1,4 @@
-package web
+package controller
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"palindromex/web/model"
+	"palindromex/web/container"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -28,9 +29,9 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func SetJwtCookie(c *Container, w http.ResponseWriter, user model.User) error {
+func SetJwtCookie(c *container.Container, w http.ResponseWriter, user model.User) error {
 	expirationTime := time.Now().Add(cookieValidityPeriod)
-	tokenString := CreateJwtToken(user.ID, expirationTime, "")
+	tokenString := CreateJwtToken(c.JwtKey, user.ID, expirationTime, "")
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    tokenName,
@@ -42,7 +43,7 @@ func SetJwtCookie(c *Container, w http.ResponseWriter, user model.User) error {
 	return nil
 }
 
-func GetAPICredentials(c *Container, w http.ResponseWriter, user model.User) (string, string, error) {
+func GetAPICredentials(c *container.Container, w http.ResponseWriter, user model.User) (string, string, error) {
 	expirationTime := time.Now().Add(permanentTokenPeriod)
 	apiKey := fmt.Sprintf("key-%d", expirationTime.Unix())
 	err := c.ApiKeyService.CreateNew(user, apiKey)
@@ -50,12 +51,12 @@ func GetAPICredentials(c *Container, w http.ResponseWriter, user model.User) (st
 		return "", "", err
 	}
 
-	tokenString := CreateJwtToken(user.ID, expirationTime, apiKey)
+	tokenString := CreateJwtToken(c.JwtKey, user.ID, expirationTime, apiKey)
 
 	return apiKey, tokenString, nil
 }
 
-func CreateJwtToken(userID uint, expirationTime time.Time, apiKey string) string {
+func CreateJwtToken(jwtKey string, userID uint, expirationTime time.Time, apiKey string) string {
 	claims := &Claims{
 		UserID: userID,
 		APIKey: apiKey,
@@ -65,7 +66,7 @@ func CreateJwtToken(userID uint, expirationTime time.Time, apiKey string) string
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(JwtKey))
+	tokenString, err := token.SignedString([]byte(jwtKey))
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +74,7 @@ func CreateJwtToken(userID uint, expirationTime time.Time, apiKey string) string
 	return tokenString
 }
 
-func VerifyJwtCookie(c *Container) mux.MiddlewareFunc {
+func VerifyJwtCookie(c *container.Container) mux.MiddlewareFunc {
 	return func (next http.Handler) http.Handler {
 	    return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 			apiToken := getAuthToken(request)
@@ -100,11 +101,11 @@ func getAuthToken(request *http.Request) string {
 }
 
 
-func handleAPIRequest(c *Container, next http.Handler, response http.ResponseWriter, request *http.Request) {
+func handleAPIRequest(c *container.Container, next http.Handler, response http.ResponseWriter, request *http.Request) {
 	tokenString := getAuthToken(request)
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(tkn *jwt.Token) (interface{}, error) {
-		return []byte(JwtKey), nil
+		return []byte(c.JwtKey), nil
 	})
 	if err != nil {
 		response.WriteHeader(http.StatusBadRequest)
@@ -151,7 +152,7 @@ func handleAPIRequest(c *Container, next http.Handler, response http.ResponseWri
 }
 
 
-func handleUIRequest(c *Container, next http.Handler, w http.ResponseWriter, r *http.Request) {
+func handleUIRequest(c *container.Container, next http.Handler, w http.ResponseWriter, r *http.Request) {
 	signinURL, err := c.Router.Get("signin").URL()
 	if err != nil {
 		msg := "Server error: can't generate 'signin' URL"
@@ -179,7 +180,7 @@ func handleUIRequest(c *Container, next http.Handler, w http.ResponseWriter, r *
 	tokenString := cookie.Value
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(tkn *jwt.Token) (interface{}, error) {
-		return []byte(JwtKey), nil
+		return []byte(c.JwtKey), nil
 	})
 	if err != nil {
 		c.Flash.AddWarning(w, r, "Error while parsing access token")

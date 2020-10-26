@@ -1,6 +1,8 @@
-package web
+package controller
 
 import (
+	"palindromex/web/container"
+
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func ApiCredentialsHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 
@@ -46,7 +48,7 @@ func apiCredentialsHandler(c *Container, w http.ResponseWriter, r *http.Request)
 // @Security ApiToken
 // @Success 200 {object} []dto.Message
 // @Router /messages [get]
-func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 
@@ -70,7 +72,7 @@ func getMessagesHandler(c *Container, w http.ResponseWriter, r *http.Request) er
 // @Security ApiToken
 // @Success 200 {object} dto.Message
 // @Router /messages/{mesageID} [get]
-func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func GetOneMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 	messageID, _ := strconv.Atoi(vars["id"])
@@ -96,7 +98,7 @@ func getOneMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Success 201
 // @Failure 400
 // @Router /messages [post]
-func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func CreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 	content, err := ioutil.ReadAll(r.Body)
@@ -132,7 +134,7 @@ func createMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Success 200
 // @Failure 400
 // @Router /messages [put]
-func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func UpdateMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 	messageID, _ := strconv.Atoi(vars["id"])
@@ -161,7 +163,7 @@ func updateMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) 
 // @Success 201
 // @Failure 404
 // @Router /messages [delete]
-func deleteMessageHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func DeleteMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 	messageID, _ := strconv.Atoi(vars["id"])

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"palindromex/web/container"
+	"palindromex/web/controller"
 	_ "palindromex/web/docs"
 
 	"github.com/gorilla/mux"
@@ -13,10 +15,10 @@ import (
 
 var (
 	// PORT is used by Google Cloud as well
-	Port          string = os.Getenv("PORT")
-	JwtKey        string = os.Getenv("JWT_KEY")
-	SessionSecret string = os.Getenv("SESSION_SECRET")
-	DbConnection  string = os.Getenv("DB_CONNECTION")
+	port          string = os.Getenv("PORT")
+	jwtKey        string = os.Getenv("JWT_KEY")
+	sessionSecret string = os.Getenv("SESSION_SECRET")
+	dbConnection  string = os.Getenv("DB_CONNECTION")
 )
 
 // @title PalindromeX
@@ -34,44 +36,44 @@ var (
 // @in header
 // @name Authorization
 func Make() {
-	c := NewContainer()
+	c := container.NewContainer(dbConnection, sessionSecret, jwtKey)
 
 	// Public paths
 	c.Router.Handle("/doc/{any}", httpSwagger.Handler(
 		httpSwagger.URL("/doc/doc.json"),
 	))
 
-	c.Router.Handle("/signup", Handler{c, signupHandler}).
+	c.Router.Handle("/signup", controller.Handler{c, controller.SignupHandler}).
 		Methods("GET", "POST").
 		Name("signup")
 
-	c.Router.Handle("/signin", Handler{c, signinHandler}).
+	c.Router.Handle("/signin", controller.Handler{c, controller.SigninHandler}).
 		Methods("GET", "POST").
 		Name("signin")
 
 
 	// Secured paths
 	auth := c.Router.PathPrefix("/v1/users/{userID}").Subrouter()
-	auth.Use(VerifyJwtCookie(c))
+	auth.Use(controller.VerifyJwtCookie(c))
 
-	auth.Handle("/api-credentials", Handler{c, apiCredentialsHandler}).
+	auth.Handle("/api-credentials", controller.Handler{c, controller.ApiCredentialsHandler}).
 		Methods("GET").
 		Name("api_credentials")
 
-	auth.Handle("/messages", Handler{c, getMessagesHandler}).
+	auth.Handle("/messages", controller.Handler{c, controller.GetMessagesHandler}).
 		Methods("GET").
 		Name("messages")
 
-	auth.Handle("/messages/{id}", Handler{c, getOneMessageHandler}).
+	auth.Handle("/messages/{id}", controller.Handler{c, controller.GetOneMessageHandler}).
 		Methods("GET")
 
-	auth.Handle("/messages", Handler{c, createMessageHandler}).
+	auth.Handle("/messages", controller.Handler{c, controller.CreateMessageHandler}).
 		Methods("POST")
 
-	auth.Handle("/messages/{id}", Handler{c, updateMessageHandler}).
+	auth.Handle("/messages/{id}", controller.Handler{c, controller.UpdateMessageHandler}).
 		Methods("PUT")
 
-	auth.Handle("/messages/{id}", Handler{c, deleteMessageHandler}).
+	auth.Handle("/messages/{id}", controller.Handler{c, controller.DeleteMessageHandler}).
 		Methods("DELETE")
 
 
@@ -82,9 +84,8 @@ func Make() {
 	})
 
 	// Redirect everything else to 404
-	c.Router.NotFoundHandler = Handler{c, notFoundHandler}
+	c.Router.NotFoundHandler = controller.Handler{c, controller.NotFoundHandler}
 
-	port := os.Getenv("PORT")
     if port == "" {
         port = "8080"
         log.Printf("defaulting to port %s", port)

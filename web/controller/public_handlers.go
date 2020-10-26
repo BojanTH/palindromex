@@ -1,14 +1,15 @@
-package web
+package controller
 
 import (
 	"palindromex/web/dto"
+	"palindromex/web/container"
 
 	"errors"
 	"net/http"
 	"strconv"
 )
 
-func signupHandler(c *Container, w http.ResponseWriter, r *http.Request) (err error) {
+func SignupHandler(c *container.Container, w http.ResponseWriter, r *http.Request) (err error) {
 	if r.Method == "GET" {
 		submitURL, err := c.Router.Get("signup").URL()
 		if err != nil {
@@ -52,7 +53,7 @@ func signupHandler(c *Container, w http.ResponseWriter, r *http.Request) (err er
 	return nil
 }
 
-func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func SigninHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	if r.Method == "GET" {
 		submitURL, err := c.Router.Get("signin").URL()
 		pageData := dto.PageData{"submitURL": submitURL.Path}
@@ -84,7 +85,7 @@ func signinHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func notFoundHandler(c *Container, w http.ResponseWriter, r *http.Request) error {
+func NotFoundHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(http.StatusNotFound)
 	err := c.Templates["404.html"].Execute(w, r, nil)
 	if err != nil {
