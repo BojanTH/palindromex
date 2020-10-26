@@ -12,14 +12,10 @@ import (
 )
 
 var (
+	// PORT is used by Google Cloud as well
+	Port          string = os.Getenv("PORT")
 	JwtKey        string = os.Getenv("JWT_KEY")
 	SessionSecret string = os.Getenv("SESSION_SECRET")
-	DbHost        string = os.Getenv("DB_HOST")
-	DbName        string = os.Getenv("DB_NAME")
-	DbUser        string = os.Getenv("DB_USER")
-	DbPassword    string = os.Getenv("DB_PASSWORD")
-	DbPort        string = os.Getenv("DP_PORT")
-	DbSslMode     string = os.Getenv("DB_SSL_MODE")
 	DbConnection  string = os.Getenv("DB_CONNECTION")
 )
 

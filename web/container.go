@@ -25,8 +25,7 @@ type Container struct {
 
 func NewContainer() *Container {
 	// DB
-	//connection := db.NewConnection(DbHost, DbUser, DbPassword, DbName, DbPort, DbSslMode)
-	connection := &db.Connection{ConnectionString: DbConnection}
+	connection := db.NewConnection(DbConnection)
 
 	// Router
 	router := mux.NewRouter()
@@ -44,7 +43,7 @@ func NewContainer() *Container {
 
 	// Services
 	userRepository := repository.NewUser(connection)
-	userService := service.NewUser(connection, userRepository)
+	userService := service.NewUser(userRepository)
 	apiKeyRepository := repository.NewAPIKey(connection)
 	apiKeyService := service.NewAPIKey(apiKeyRepository)
 	messageRepository := repository.NewMessage(connection)
