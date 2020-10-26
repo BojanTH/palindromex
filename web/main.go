@@ -50,7 +50,7 @@ func Make() {
 		Name("signin")
 
 
-	// Secured paths
+	/** Secured API paths **/
 	auth := c.Router.PathPrefix("/v1/users/{userID}").Subrouter()
 	auth.Use(controller.VerifyJwtCookie(c))
 
@@ -73,6 +73,22 @@ func Make() {
 
 	auth.Handle("/messages/{id}", controller.Handler{c, controller.DeleteMessageHandler}).
 		Methods("DELETE")
+
+	/** Secured UI paths **/
+	ui := c.Router.PathPrefix("/ui/users/{userID}").Subrouter()
+	ui.Use(controller.VerifyJwtCookie(c))
+
+	ui.Handle("/show-messages", controller.Handler{c, controller.UIShowMessagesHandler}).
+		Methods("GET").
+		Name("ui_show_messages")
+
+	ui.Handle("/create-message", controller.Handler{c, controller.UICreateMessageHandler}).
+		Methods("GET").
+		Name("ui_create_message")
+
+	ui.Handle("/edit-message/{id}", controller.Handler{c, controller.UIEditMessageHandler}).
+		Methods("GET").
+		Name("ui_edit_message")
 
 
 	// Static file paths

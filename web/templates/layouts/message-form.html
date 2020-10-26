@@ -1,0 +1,13 @@
+{{ define "message-form" }}
+<div class="float-right"><i class="palindrome-result fa fa-check-circle"></i></div>
+<form id="message-form" method="POST" action="{{ .submitURL }}" class="mt-4">
+    <div class="form-group">
+        <label for="content" class="sr-only">Content</label>
+        <textarea class="message-input" placeholder="Content" required></textarea>
+        <div class="float-right">
+            <a class="btn btn-secondary mt-2">Cancel</a>
+            <button type="submit" class="ml-2 btn btn-primary mt-2">Save</button>
+        </div>
+    </div>
+</form>
+{{ end }}

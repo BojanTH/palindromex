@@ -2,10 +2,10 @@ package controller
 
 import (
 	"palindromex/web/container"
+	"palindromex/web/dto"
 
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -27,14 +27,11 @@ func ApiCredentialsHandler(c *container.Container, w http.ResponseWriter, r *htt
 		return NewStatusError(err, http.StatusInternalServerError)
 	}
 
-	message := fmt.Sprintf(
-		"A new API token has been successfully created: '%s'. " +
-		"This is a permanent token, keep it safe. In case you would like to disable this token, please disable the associated API key: '%s'.",
-		tokenString,
-		apiKey,
-	)
-
-	w.Write([]byte(message))
+	pageData := dto.PageData{"tokenString": tokenString, "apiKey": apiKey}
+	err = c.Templates["credentials.html"].Execute(w, r, pageData)
+	if err != nil {
+		return StatusError{err, http.StatusInternalServerError}
+	}
 
 	return nil
 }
@@ -56,10 +53,13 @@ func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.R
 	if err != nil {
 		return err
 	}
+	if messages == nil {
+		return nil
+	}
 
 	value, _ := json.Marshal(messages)
-	w.Write(value)
 	w.WriteHeader(http.StatusOK)
+	w.Write(value)
 
 	return nil
 }
@@ -83,8 +83,8 @@ func GetOneMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 	}
 
 	value, _ := json.Marshal(message)
-	w.Write(value)
 	w.WriteHeader(http.StatusOK)
+	w.Write(value)
 
 	return nil
 }
@@ -173,6 +173,46 @@ func DeleteMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 		return StatusError{err, http.StatusNotFound}
 	}
 	w.WriteHeader(http.StatusNoContent)
+
+	return nil
+}
+
+
+func UIShowMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+	getMessagesURL, err := c.Router.Get("messages").URL("userID", userID)
+	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path}
+
+	err = c.Templates["messages.html"].Execute(w, r, pageData)
+	if err != nil {
+		return StatusError{err, http.StatusInternalServerError}
+	}
+
+	return nil
+}
+
+func UICreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
+	submitURL, err := c.Router.Get("signin").URL()
+	pageData := dto.PageData{"submitURL": submitURL.Path}
+
+	err = c.Templates["create_message.html"].Execute(w, r, pageData)
+	if err != nil {
+		return StatusError{err, http.StatusInternalServerError}
+	}
+
+	return nil
+}
+
+
+func UIEditMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
+	submitURL, err := c.Router.Get("signin").URL()
+	pageData := dto.PageData{"submitURL": submitURL.Path}
+
+	err = c.Templates["edit_message.html"].Execute(w, r, pageData)
+	if err != nil {
+		return StatusError{err, http.StatusInternalServerError}
+	}
 
 	return nil
 }

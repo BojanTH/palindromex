@@ -1,0 +1,15 @@
+{{template "layout" .}}
+{{define "title"}}Messages{{end}}
+{{define "content"}}
+{{ template "logo"}}
+<div class="container">
+    <div class="mt-4">
+        <h3 class="text-dark">All messages</h3>
+    </div>
+    <div id="_messages" data-url="{{ .getMessagesURL }}"></div>
+</div>
+{{end}}
+{{define "footer"}}
+<script type="text/javascript" src="{{ static "/static/messages.js" }}"></script>
+{{end}}
+

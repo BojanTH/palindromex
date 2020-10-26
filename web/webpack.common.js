@@ -10,9 +10,10 @@ module.exports = {
   ],
   entry: {
     // JS
-    common: './static/js/common.js',
-    signup: './static/js/signup.js',
-    signin: './static/js/signin.js',
+    common:   './static/js/common.js',
+    signup:   './static/js/signup.js',
+    signin:   './static/js/signin.js',
+    messages: './static/js/messages.js',
     // CSS
     style_default: './static/css/default.css',
   },
