@@ -10,15 +10,9 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "env":
-                {
-                    "JWT_KEY": "someKey",
-                    "SESSION_SECRET": "someSecret",
-                    "DB_CONNECTION": "host=localhost user=root password=root dbname=postgres port=5432 sslmode=disable",
-                    "PORT": "8080"
-                },
             "args": [
-                "serve"
+                "serve",
+                "--config", ".env.local.yaml"
            ]
         }
     ]

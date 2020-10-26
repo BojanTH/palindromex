@@ -3,22 +3,14 @@ package web
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"palindromex/web/container"
 	"palindromex/web/controller"
 	_ "palindromex/web/docs"
 
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 	"github.com/swaggo/http-swagger"
-)
-
-var (
-	// PORT is used by Google Cloud as well
-	port          string = os.Getenv("PORT")
-	jwtKey        string = os.Getenv("JWT_KEY")
-	sessionSecret string = os.Getenv("SESSION_SECRET")
-	dbConnection  string = os.Getenv("DB_CONNECTION")
 )
 
 // @title PalindromeX
@@ -36,6 +28,12 @@ var (
 // @in header
 // @name Authorization
 func Make() {
+	// Load config/env variables
+	port := viper.GetString("port")
+	jwtKey := viper.GetString("jwt_key")
+	sessionSecret := viper.GetString("session_secret")
+	dbConnection := viper.GetString("db_connection")
+
 	c := container.NewContainer(jwtKey, dbConnection, sessionSecret)
 
 	// Public paths

@@ -21,4 +21,4 @@ RUN go install palindromex
 
 EXPOSE 8080
 
-CMD cd /app && palindromex serve
+CMD cd /app && palindromex --config=".env.docker.yaml" serve
