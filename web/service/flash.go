@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -23,31 +24,31 @@ func NewFlash(cookieStore *sessions.CookieStore) *Flash {
 	return &Flash{cookieStore}
 }
 
-func (f *Flash) AddError(response http.ResponseWriter, request *http.Request, messageValue string) {
-	f.addFlash(response, request, typeError, messageValue)
+func (f *Flash) AddError(w http.ResponseWriter, r *http.Request, messageValue string) {
+	f.addFlash(w, r, typeError, messageValue)
 }
 
-func (f *Flash) AddWarning(response http.ResponseWriter, request *http.Request, messageValue string) {
-	f.addFlash(response, request, typeWarning, messageValue)
+func (f *Flash) AddWarning(w http.ResponseWriter, r *http.Request, messageValue string) {
+	f.addFlash(w, r, typeWarning, messageValue)
 }
 
-func (f *Flash) AddSuccess(response http.ResponseWriter, request *http.Request, messageValue string) {
-	f.addFlash(response, request, typeSuccess, messageValue)
+func (f *Flash) AddSuccess(w http.ResponseWriter, r *http.Request, messageValue string) {
+	f.addFlash(w, r, typeSuccess, messageValue)
 }
 
-func (f *Flash) addFlash(response http.ResponseWriter, request *http.Request, messageType string, messageValue string) {
-	session, err := f.cookieStore.Get(request, sessionName)
+func (f *Flash) addFlash(w http.ResponseWriter, r *http.Request, messageType string, messageValue string) {
+	session, err := f.cookieStore.Get(r, sessionName)
 	if err != nil {
-	  http.Error(response, err.Error(), http.StatusInternalServerError)
+		f.RemoveSessionCookie(w)
 	}
 	session.AddFlash(messageValue, messageType)
-	session.Save(request, response)
+	session.Save(r, w)
 }
 
 func (f *Flash) GetFlashes(w http.ResponseWriter, r *http.Request) map[string][]string {
 	session, err := f.cookieStore.Get(r, sessionName)
 	if err != nil {
-	  http.Error(w, err.Error(), http.StatusInternalServerError)
+		f.RemoveSessionCookie(w)
 	}
 
 	messages := make(map[string][]string)
@@ -61,4 +62,15 @@ func (f *Flash) GetFlashes(w http.ResponseWriter, r *http.Request) map[string][]
 	session.Save(r, w)
 
 	return messages
-  }
+}
+
+func (f *Flash) RemoveSessionCookie(w http.ResponseWriter) {
+	newCookie := http.Cookie {
+		Name: sessionName,
+		Value: "",
+		Path: "/",
+		Expires: time.Unix(0,0),
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(w, &newCookie)
+}

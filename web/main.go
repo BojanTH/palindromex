@@ -36,7 +36,7 @@ var (
 // @in header
 // @name Authorization
 func Make() {
-	c := container.NewContainer(dbConnection, sessionSecret, jwtKey)
+	c := container.NewContainer(jwtKey, dbConnection, sessionSecret)
 
 	// Public paths
 	c.Router.Handle("/doc/{any}", httpSwagger.Handler(
