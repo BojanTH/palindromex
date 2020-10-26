@@ -43,12 +43,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	serveCmd.Flags().StringVar(&web.JwtKey, "app_secret", "localhost_77553322", "A secret used for JWT user authentication.")
-	serveCmd.Flags().StringVar(&web.SessionSecret, "app_session_secret", "fhvnvehpe8wunfe899he9rhifnhwliea", "A secret used for the session store")
-	serveCmd.Flags().StringVar(&web.DbName, "db_name", "postgres", "Database name.")
-	serveCmd.Flags().StringVar(&web.DbUser, "db_user", "root", "Database user.")
-	serveCmd.Flags().StringVar(&web.DbPassword, "db_pwd", "root", "Database password.")
-	serveCmd.Flags().StringVar(&web.DbPort, "db_port", "5432", "Database port.")
-	serveCmd.Flags().StringVar(&web.DbSslMode, "db_ssl_mode", "disable", "Database ssl mode.")
 }

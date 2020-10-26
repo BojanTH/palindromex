@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	JwtKey        string
-	SessionSecret string
+	JwtKey        string = os.Getenv("JWT_KEY")
+	SessionSecret string = os.Getenv("SESSION_SECRET")
 	DbHost        string = os.Getenv("DB_HOST")
-	DbName        string
-	DbUser        string
-	DbPassword    string
-	DbPort        string
-	DbSslMode     string
+	DbName        string = os.Getenv("DB_NAME")
+	DbUser        string = os.Getenv("DB_USER")
+	DbPassword    string = os.Getenv("DB_PASSWORD")
+	DbPort        string = os.Getenv("DP_PORT")
+	DbSslMode     string = os.Getenv("DB_SSL_MODE")
 )
 
 // @title PalindromeX

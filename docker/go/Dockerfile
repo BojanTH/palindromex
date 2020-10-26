@@ -1,4 +1,4 @@
-# This is a live Dockerfile used by Cloud Run
+# This is a local Dockerfile used for development
 
 FROM golang:1.14
 
@@ -15,12 +15,10 @@ RUN apt-get -y update && \
     apt-get install -y nodejs && \
     cd ./web && npm install && npm start && cd ..
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
-
 RUN go get -d -v ./...
 RUN go test ./...
 RUN go install palindromex
+
+EXPOSE 8080
 
 CMD cd /app && palindromex serve
