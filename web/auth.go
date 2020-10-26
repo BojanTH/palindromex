@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -153,20 +154,25 @@ func handleAPIRequest(c *Container, next http.Handler, response http.ResponseWri
 func handleUIRequest(c *Container, next http.Handler, w http.ResponseWriter, r *http.Request) {
 	signinURL, err := c.Router.Get("signin").URL()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Can't generate 'signin' URL"))
+		msg := "Server error: can't generate 'signin' URL"
+		log.Println(msg)
+		w.Write([]byte(msg))
 
 		return
 	}
-	signinURLStr := signinURL.String()
 
+	signinURLStr := signinURL.String()
 	cookie, err := r.Cookie(tokenName)
 	if err != nil {
+		c.Flash.AddWarning(w, r, "Not logged in")
 		if err == http.ErrNoCookie {
 			http.Redirect(w, r, signinURLStr, http.StatusFound)
+
 			return
 		}
-		http.Redirect(w, r, signinURLStr, http.StatusBadRequest)
+		RemoveAccessToken(w)
+		http.Redirect(w, r, signinURLStr, http.StatusFound)
+
 		return
 	}
 
@@ -176,29 +182,33 @@ func handleUIRequest(c *Container, next http.Handler, w http.ResponseWriter, r *
 		return []byte(JwtKey), nil
 	})
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			http.Redirect(w, r, signinURLStr, http.StatusFound)
-			return
-		}
-		http.Redirect(w, r, signinURLStr, http.StatusBadRequest)
+		c.Flash.AddWarning(w, r, "Error while parsing access token")
+		RemoveAccessToken(w)
+		http.Redirect(w, r, signinURLStr, http.StatusFound)
+
 		return
 	}
 	if !token.Valid {
+		c.Flash.AddWarning(w, r, "Invalid access token")
+		RemoveAccessToken(w)
 		http.Redirect(w, r, signinURLStr, http.StatusFound)
+
 		return
 	}
 
 	vars := mux.Vars(r)
 	userID, err := strconv.Atoi(vars["userID"])
 	if err != nil {
+		c.Flash.AddError(w, r, "Invalid URL")
 		http.Redirect(w, r, signinURLStr, http.StatusFound)
+
 		return
 	}
 
 	isNotAuthorized := uint(userID) != claims.UserID
 	if isNotAuthorized {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Unauthorized!"))
+		c.Flash.AddError(w, r, "Not authorized")
+		http.Redirect(w, r, signinURLStr, http.StatusFound)
 
 		return
 	}
