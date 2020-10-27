@@ -151,7 +151,13 @@ func UpdateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
-	err = c.MessageService.UpdateMessage(userID, messageID, string(content))
+	message := dto.Message{}
+	json.Unmarshal(content, &message)
+	if len(message.Content) == 0 {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
+
+	err = c.MessageService.UpdateMessage(userID, messageID, message.Content)
 	if err != nil {
 		return err
 	}

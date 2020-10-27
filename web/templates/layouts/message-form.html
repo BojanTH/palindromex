@@ -1,9 +1,9 @@
 {{ define "message-form" }}
 <div id="_message-result" class="float-right"><i class="palindrome-result"></i></div>
-<form id="_message-form" method="POST" action="{{ .submitURL }}" class="mt-4">
+<form id="_message-form" method="POST" action="{{ .submitURL }}" data-redirect="{{ .showMessagesURL }}" class="mt-4">
     <div class="form-group">
         <label for="content" class="sr-only">Content</label>
-        <textarea id="_message-content" class="message-input" placeholder="Content" required></textarea>
+        <textarea id="_message-content" name="content" class="message-input" placeholder="Content" required></textarea>
         <div class="float-right">
             <a class="btn btn-secondary mt-2" href="{{ .showMessagesURL }}">Cancel</a>
             <button type="submit" class="ml-2 btn btn-primary mt-2">Save</button>
