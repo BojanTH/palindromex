@@ -54,10 +54,6 @@ func Make() {
 	auth := c.Router.PathPrefix("/v1/users/{userID}").Subrouter()
 	auth.Use(controller.VerifyJwtCookie(c))
 
-	auth.Handle("/api-credentials", controller.Handler{c, controller.CredentialsHandler}).
-		Methods("GET").
-		Name("api_credentials")
-
 	auth.Handle("/messages", controller.Handler{c, controller.GetMessagesHandler}).
 		Methods("GET").
 		Name("messages")
@@ -78,6 +74,11 @@ func Make() {
 	/** Secured UI paths **/
 	ui := c.Router.PathPrefix("/users/{userID}").Subrouter()
 	ui.Use(controller.VerifyJwtCookie(c))
+
+
+	ui.Handle("/credentials", controller.Handler{c, controller.CredentialsHandler}).
+		Methods("GET").
+		Name("ui_credentials")
 
 	ui.Handle("/show-messages", controller.Handler{c, controller.UIShowMessagesHandler}).
 		Methods("GET").

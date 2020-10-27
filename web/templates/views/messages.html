@@ -4,7 +4,10 @@
 {{ template "logo"}}
 <div class="container">
     <div class="mt-4">
-        <h3 class="text-dark">All messages</h3>
+        <div class="row">
+            <h3 class="text-dark">All messages</h3>
+            <a class="ml-auto" href="{{ .credentialsURL }}">API Credentials</a>
+        </div>
         <div class="row"><a class="btn btn-success ml-auto" href="{{ .createMessageURL }}">Add new</a></div>
     </div>
     <div id="_messages" data-url="{{ .getMessagesURL }}"></div>

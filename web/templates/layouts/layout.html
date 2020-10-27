@@ -23,20 +23,6 @@
             </div>
         </div>
         {{block "content" .}}{{end}}
-
-        <div class="modal hidden">
-          <div class="content">
-            <div class="body">
-                <h3 id="_modal-message">Are you sure?</h3>
-                <hr>
-                <div class="mt-2">
-                    <button id="_modal-cancel" class="btn btn-secondary">Cancel</button>
-                    <button id="_modal-confirm" class="btn btn-primary ml-5">Confirm</button>
-                </div>
-            </div>
-          </div>
-        </div>
-
         <script type="text/javascript" src="{{ static "/static/common.js" }}"></script>
         {{block "footer" .}}{{end}}
     </body>

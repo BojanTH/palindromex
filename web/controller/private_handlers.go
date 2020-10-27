@@ -202,7 +202,12 @@ func UIShowMessagesHandler(c *container.Container, w http.ResponseWriter, r *htt
 	userID := vars["userID"]
 	getMessagesURL, _ := c.Router.Get("messages").URL("userID", userID)
 	createMessageURL, _ := c.Router.Get("ui_create_message").URL("userID", userID)
-	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path, "createMessageURL": createMessageURL.Path}
+	credentialsURL, _ := c.Router.Get("ui_credentials").URL("userID", userID)
+	pageData := dto.PageData{
+		"getMessagesURL": getMessagesURL.Path,
+		"createMessageURL": createMessageURL.Path,
+		"credentialsURL": credentialsURL.Path,
+	}
 
 	err := c.Templates["messages.html"].Execute(w, r, pageData)
 	if err != nil {
