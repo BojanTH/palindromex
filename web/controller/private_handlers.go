@@ -13,7 +13,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ApiCredentialsHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
+// CredentialsHandler generates new credentials and renders credentials view
+func CredentialsHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID, _ := strconv.Atoi(vars["userID"])
 
@@ -36,7 +37,7 @@ func ApiCredentialsHandler(c *container.Container, w http.ResponseWriter, r *htt
 	return nil
 }
 
-
+// GetMessagesHandler returns all messages
 // @TODO add pagination and limit
 //
 // @Summary Retrieves messages that belong to a specified user
@@ -58,6 +59,7 @@ func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.R
 	}
 
 	value, _ := json.Marshal(messages)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(value)
 
@@ -65,6 +67,7 @@ func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.R
 }
 
 
+// GetOneMessageHandler returns one messages
 // @Summary Retrieves one message
 // @Produce json
 // @Param userID path integer true "userID"
@@ -83,6 +86,7 @@ func GetOneMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 	}
 
 	value, _ := json.Marshal(message)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(value)
 
@@ -90,6 +94,7 @@ func GetOneMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 }
 
 
+// CreateMessageHandler creates a new messages
 // @Summary Creates a new message
 // @Param userID path integer true "userID"
 // @Param message body string true "Message (palindrome text)"
@@ -124,7 +129,7 @@ func CreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 	return nil
 }
 
-
+// UpdateMessageHandler updates existing message
 // @Summary Updates existing message
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
@@ -156,6 +161,7 @@ func UpdateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 }
 
 
+// DeleteMessageHandler deletes a message
 // @Summary Deletes existing message
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
@@ -178,14 +184,15 @@ func DeleteMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 }
 
 
+// UIShowMessagesHandler renders messages view
 func UIShowMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	userID := vars["userID"]
-	getMessagesURL, err := c.Router.Get("messages").URL("userID", userID)
-	createMessageURL, err := c.Router.Get("ui_create_message").URL("userID", userID)
-	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path, "createMessageURL": createMessageURL}
+	getMessagesURL, _ := c.Router.Get("messages").URL("userID", userID)
+	createMessageURL, _ := c.Router.Get("ui_create_message").URL("userID", userID)
+	pageData := dto.PageData{"getMessagesURL": getMessagesURL.Path, "createMessageURL": createMessageURL.Path}
 
-	err = c.Templates["messages.html"].Execute(w, r, pageData)
+	err := c.Templates["messages.html"].Execute(w, r, pageData)
 	if err != nil {
 		return StatusError{err, http.StatusInternalServerError}
 	}
@@ -193,11 +200,15 @@ func UIShowMessagesHandler(c *container.Container, w http.ResponseWriter, r *htt
 	return nil
 }
 
+// UICreateMessageHandler renders create message view
 func UICreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
-	submitURL, err := c.Router.Get("signin").URL()
-	pageData := dto.PageData{"submitURL": submitURL.Path}
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+	submitURL, _ := c.Router.Get("messages").URL("userID", userID)
+	showMessagesURL, _ := c.Router.Get("ui_show_messages").URL("userID", userID)
+	pageData := dto.PageData{"submitURL": submitURL.Path, "showMessagesURL": showMessagesURL.Path}
 
-	err = c.Templates["create_message.html"].Execute(w, r, pageData)
+	err := c.Templates["create_message.html"].Execute(w, r, pageData)
 	if err != nil {
 		return StatusError{err, http.StatusInternalServerError}
 	}
@@ -205,12 +216,16 @@ func UICreateMessageHandler(c *container.Container, w http.ResponseWriter, r *ht
 	return nil
 }
 
-
+// UIEditMessageHandler renders edit message view
 func UIEditMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
-	submitURL, err := c.Router.Get("signin").URL()
-	pageData := dto.PageData{"submitURL": submitURL.Path}
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+	messageID := vars["id"]
+	submitURL, _ := c.Router.Get("one_messages").URL("userID", userID, "id", messageID)
+	showMessagesURL, _ := c.Router.Get("ui_show_messages").URL("userID", userID)
+	pageData := dto.PageData{"submitURL": submitURL.Path, "showMessagesURL": showMessagesURL.Path}
 
-	err = c.Templates["edit_message.html"].Execute(w, r, pageData)
+	err := c.Templates["edit_message.html"].Execute(w, r, pageData)
 	if err != nil {
 		return StatusError{err, http.StatusInternalServerError}
 	}

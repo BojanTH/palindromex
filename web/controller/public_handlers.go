@@ -79,7 +79,7 @@ func SigninHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 		return StatusError{err, http.StatusInternalServerError}
 	}
 
-	url, _ := c.Router.Get("messages").URL("userID", strconv.Itoa(int(user.ID)))
+	url, _ := c.Router.Get("ui_show_messages").URL("userID", strconv.Itoa(int(user.ID)))
 	http.Redirect(w, r, url.String(), http.StatusFound)
 
 	return nil

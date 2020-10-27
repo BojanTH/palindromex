@@ -125,7 +125,7 @@ func handleAPIRequest(c *container.Container, next http.Handler, response http.R
 	userID, err := strconv.Atoi(vars["userID"])
 	if err != nil {
 		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Invalid URL"))
+		response.Write([]byte(http.StatusText(http.StatusBadRequest)))
 
 		return
 	}
@@ -133,7 +133,7 @@ func handleAPIRequest(c *container.Container, next http.Handler, response http.R
 	isNotAuthorized := uint(userID) != claims.UserID
 	if isNotAuthorized {
 		response.WriteHeader(http.StatusUnauthorized)
-		response.Write([]byte("Unauthorized"))
+		response.Write([]byte(http.StatusText(http.StatusUnauthorized)))
 
 		return
 	}
@@ -208,7 +208,7 @@ func handleUIRequest(c *container.Container, next http.Handler, w http.ResponseW
 
 	isNotAuthorized := uint(userID) != claims.UserID
 	if isNotAuthorized {
-		c.Flash.AddError(w, r, "Not authorized")
+		c.Flash.AddError(w, r, "Unauthorized")
 		http.Redirect(w, r, signinURLStr, http.StatusFound)
 
 		return

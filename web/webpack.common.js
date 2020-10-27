@@ -14,6 +14,8 @@ module.exports = {
     signup:   './static/js/signup.js',
     signin:   './static/js/signin.js',
     messages: './static/js/messages.js',
+    create:   './static/js/create.js',
+    edit:     './static/js/edit.js',
     // CSS
     style_default: './static/css/default.css',
   },
