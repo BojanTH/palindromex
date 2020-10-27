@@ -39,7 +39,7 @@ paths:
         required: true
         type: integer
       responses:
-        "201": {}
+        "204": {}
         "404": {}
       security:
       - ApiToken: []
@@ -60,6 +60,7 @@ paths:
             items:
               $ref: '#/definitions/dto.Message'
             type: array
+        "500": {}
       security:
       - ApiToken: []
       summary: Retrieves messages that belong to a specified user

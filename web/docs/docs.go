@@ -57,7 +57,8 @@ var doc = `{
                                 "$ref": "#/definitions/dto.Message"
                             }
                         }
-                    }
+                    },
+                    "500": {}
                 }
             },
             "put": {
@@ -157,7 +158,7 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "201": {},
+                    "204": {},
                     "404": {}
                 }
             }
