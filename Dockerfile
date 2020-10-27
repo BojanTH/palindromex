@@ -13,7 +13,7 @@ RUN apt-get -y update && \
     apt-get install -y apt-transport-https curl software-properties-common && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && \
-    cd ./web && npm install && npm build && cd ..
+    cd ./web && npm install && npm run build && cd ..
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ca-certificates && \
