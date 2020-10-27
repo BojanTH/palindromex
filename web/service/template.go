@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 )
 
-const viewsDir = "web/templates/views/"
-const layoutsDir = "web/templates/layouts/"
+const viewsDir = "web/template/views/"
+const layoutsDir = "web/template/layouts/"
 
 // Template is a wraper for templates
 type Template struct {

@@ -1,6 +1,9 @@
-package service
+package tests
 
-import "testing"
+import (
+	"palindromex/web/service"
+	"testing"
+)
 
 func TestIsPalindrome(t *testing.T) {
 	tables := []struct {
@@ -24,7 +27,7 @@ func TestIsPalindrome(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := IsPalindrome(table.text)
+		actual := service.IsPalindrome(table.text)
 		if actual != table.expected {
 			t.Errorf("Unexpected result for text: '%s'", table.text)
 		}
