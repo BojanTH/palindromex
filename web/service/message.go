@@ -64,7 +64,7 @@ func (service *Message) DeleteMessage(userID, messageID int) error {
 }
 
 func (service *Message) FindAllByUserID(userID int) ([]dto.Message, error) {
-	var messages []dto.Message
+	messages := []dto.Message{}
 	allMessages, err := service.MessageRepository.FindAllByUserID(userID)
 	if err != nil {
 		return messages, err

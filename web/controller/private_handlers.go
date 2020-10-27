@@ -45,6 +45,7 @@ func CredentialsHandler(c *container.Container, w http.ResponseWriter, r *http.R
 // @Param userID path integer true "userID"
 // @Security ApiToken
 // @Success 200 {object} []dto.Message
+// @Failure 500
 // @Router /messages [get]
 func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
@@ -52,10 +53,9 @@ func GetMessagesHandler(c *container.Container, w http.ResponseWriter, r *http.R
 
 	messages, err := c.MessageService.FindAllByUserID(userID)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+
 		return err
-	}
-	if messages == nil {
-		return nil
 	}
 
 	value, _ := json.Marshal(messages)
@@ -178,7 +178,7 @@ func UpdateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
 // @Security ApiToken
-// @Success 201
+// @Success 204
 // @Failure 404
 // @Router /messages [delete]
 func DeleteMessageHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
