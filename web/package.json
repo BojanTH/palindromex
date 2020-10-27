@@ -19,7 +19,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rm -rf ./static/dist/* && webpack --config='webpack.dev.js' -w",
+    "start": "rm -rf ./static/dist/* && webpack --config='webpack.dev.js'",
+    "watch": "rm -rf ./static/dist/* && webpack --config='webpack.dev.js' -w",
     "build": "rm -rf ./static/dist/* && webpack --config='webpack.prod.js'"
   },
   "repository": {

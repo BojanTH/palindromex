@@ -41,6 +41,10 @@ func Make() {
 		httpSwagger.URL("/doc/doc.json"),
 	))
 
+	// Show signup, there is no start page
+	c.Router.Handle("/", controller.Handler{c, controller.SignupHandler}).
+		Methods("GET")
+
 	c.Router.Handle("/signup", controller.Handler{c, controller.SignupHandler}).
 		Methods("GET", "POST").
 		Name("signup")
