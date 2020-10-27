@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"palindromex/web/container"
 	"palindromex/web/dto"
 
@@ -15,10 +16,12 @@ func SignupHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 	if r.Method == "GET" {
 		submitURL, err := c.Router.Get("signup").URL()
 		if err != nil {
+			log.Printf("Cant generate URL: signup")
 			return StatusError{err, http.StatusInternalServerError}
 		}
 		redirectURL, err := c.Router.Get("signin").URL()
 		if err != nil {
+			log.Printf("Cant generate URL: signin")
 			return StatusError{err, http.StatusInternalServerError}
 		}
 		pageData := dto.PageData{"submitURL": submitURL.Path, "redirectURL": redirectURL.Path}
@@ -69,6 +72,10 @@ func SignupHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 func SigninHandler(c *container.Container, w http.ResponseWriter, r *http.Request) error {
 	if r.Method == "GET" {
 		submitURL, err := c.Router.Get("signin").URL()
+		if err != nil {
+			log.Printf("Cant generate URL: signup")
+			return StatusError{err, http.StatusInternalServerError}
+		}
 		pageData := dto.PageData{"submitURL": submitURL.Path}
 
 		err = c.Templates["signin.html"].Execute(w, r, pageData)
@@ -79,10 +86,17 @@ func SigninHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 		return nil
 	}
 
-	r.ParseForm()
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	user, err := c.UserService.GetUserByEmailAndPassword(email, password)
+	content, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return StatusError{err, http.StatusBadRequest}
+	}
+	if len(content) == 0 {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
+	credentials := dto.Credentials{}
+	json.Unmarshal(content, &credentials)
+
+	user, err := c.UserService.GetUserByEmailAndPassword(credentials.Email, credentials.Password)
 	if err != nil {
 		return StatusError{err, http.StatusUnauthorized}
 	}
@@ -93,7 +107,9 @@ func SigninHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 	}
 
 	url, _ := c.Router.Get("ui_show_messages").URL("userID", strconv.Itoa(int(user.ID)))
-	http.Redirect(w, r, url.String(), http.StatusFound)
+	response := map[string]string{"url": url.Path}
+	resp, _ := json.Marshal(&response)
+	w.Write(resp)
 
 	return nil
 }
