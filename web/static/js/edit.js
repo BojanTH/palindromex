@@ -1,4 +1,5 @@
 "use strict";
+
 import { toJSONString } from "./form-handler";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         let data = toJSONString(event.target)
-        console.log(data)
         fetch(url, {
             method: "PUT",
             body: data

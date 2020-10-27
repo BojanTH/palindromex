@@ -114,12 +114,18 @@ func CreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
+	message := dto.Message{}
+	json.Unmarshal(content, &message)
+	if len(message.Content) == 0 {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
+
 	user := c.UserService.GetUserByID(userID)
 	if user.ID == 0 {
 		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
 	}
 
-	err = c.MessageService.CreateNewMessage(user, string(content))
+	err = c.MessageService.CreateNewMessage(user, message.Content)
 	if err != nil {
 		return err
 	}
