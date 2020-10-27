@@ -1,8 +1,10 @@
 package controller
 
 import (
-	"palindromex/web/dto"
+	"encoding/json"
+	"io/ioutil"
 	"palindromex/web/container"
+	"palindromex/web/dto"
 
 	"errors"
 	"net/http"
@@ -29,8 +31,20 @@ func SignupHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 		return nil
 	}
 
-	r.ParseForm()
-	credentials := dto.Credentials{Name: r.FormValue("name"), Email: r.FormValue("email"), Password: r.FormValue("password")}
+	content, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return StatusError{err, http.StatusBadRequest}
+	}
+	if len(content) == 0 {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
+
+	credentials := dto.Credentials{}
+	json.Unmarshal(content, &credentials)
+	// @TODO create more advanced validation
+	if credentials.Email == "" || credentials.Name == "" || credentials.Password == "" {
+		return StatusError{errors.New("Bad request"), http.StatusBadRequest}
+	}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -47,8 +61,7 @@ func SignupHandler(c *container.Container, w http.ResponseWriter, r *http.Reques
 
 	c.UserService.CreateNewUser(&credentials)
 	c.Flash.AddSuccess(w, r, "Success! Your account has been created.")
-	url, _ := c.Router.Get("signin").URL()
-	http.Redirect(w, r, url.String(), http.StatusFound)
+	w.WriteHeader(http.StatusCreated)
 
 	return nil
 }
