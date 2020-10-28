@@ -66,7 +66,7 @@ paths:
       summary: Retrieves messages that belong to a specified user
     post:
       consumes:
-      - text/plain
+      - application/json
       parameters:
       - description: userID
         in: path
@@ -79,6 +79,8 @@ paths:
         required: true
         schema:
           type: string
+      produces:
+      - application/json
       responses:
         "201": {}
         "400": {}
@@ -87,7 +89,7 @@ paths:
       summary: Creates a new message
     put:
       consumes:
-      - text/plain
+      - application/json
       parameters:
       - description: userID
         in: path
@@ -105,6 +107,8 @@ paths:
         required: true
         schema:
           type: string
+      produces:
+      - application/json
       responses:
         "200": {}
         "400": {}

@@ -68,7 +68,10 @@ var doc = `{
                     }
                 ],
                 "consumes": [
-                    "text/plain"
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "summary": "Updates existing message",
                 "parameters": [
@@ -108,7 +111,10 @@ var doc = `{
                     }
                 ],
                 "consumes": [
-                    "text/plain"
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "summary": "Creates a new message",
                 "parameters": [

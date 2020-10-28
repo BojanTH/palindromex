@@ -56,7 +56,10 @@
                     }
                 ],
                 "consumes": [
-                    "text/plain"
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "summary": "Updates existing message",
                 "parameters": [
@@ -96,7 +99,10 @@
                     }
                 ],
                 "consumes": [
-                    "text/plain"
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "summary": "Creates a new message",
                 "parameters": [

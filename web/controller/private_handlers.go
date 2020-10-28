@@ -98,7 +98,8 @@ func GetOneMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 // @Summary Creates a new message
 // @Param userID path integer true "userID"
 // @Param message body string true "Message (palindrome text)"
-// @Accept plain
+// @Accept json
+// @Produce json
 // @Security ApiToken
 // @Success 201
 // @Failure 400
@@ -140,7 +141,8 @@ func CreateMessageHandler(c *container.Container, w http.ResponseWriter, r *http
 // @Param userID path integer true "userID"
 // @Param messageID path integer true "messageID"
 // @Param message body string true "Message (palindrome text)"
-// @Accept plain
+// @Accept json
+// @Produce json
 // @Security ApiToken
 // @Success 200
 // @Failure 400
